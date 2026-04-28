@@ -17,6 +17,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<any>({});
   const [saveStatus, setSaveStatus] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogoutClick = () => {
@@ -29,6 +30,29 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
     setTimeout(() => setSaveStatus(false), 3000);
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Optional: Size check for Firestore limits (1MB per doc)
+    if (file.size > 800000) {
+      alert("Image is too large. Please select a file smaller than 800KB for signature quality.");
+      return;
+    }
+
+    setUploading(true);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData((prev: any) => ({ ...prev, [field]: reader.result as string }));
+      setUploading(false);
+    };
+    reader.onerror = () => {
+      alert("Failed to read file.");
+      setUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
   // SERVICES CRUD
   const handleServiceAdd = async () => {
     const newService: Service = {
@@ -37,7 +61,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
       description: formData.description || '',
       price: formData.price || '',
       category: formData.category || 'General',
-      imageUrl: formData.imageUrl || 'https://picsum.photos/800/600'
+      imageUrl: formData.imageUrl || 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=800'
     };
     await cmsService.updateService(newService);
     setIsAdding(false);
@@ -104,120 +128,131 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#050505] flex flex-col md:flex-row text-slate-300">
       {/* Sidebar Navigation */}
-      <aside className="w-full md:w-64 bg-stone-900 text-white flex-shrink-0">
-        <div className="p-8 border-b border-stone-800">
-          <h1 className="text-lg font-serif tracking-widest font-bold">ADMIN PANEL</h1>
+      <aside className="w-full md:w-72 bg-brand-black border-r border-white/5 flex-shrink-0 z-20">
+        <div className="p-10 border-b border-white/5">
+          <div className="flex items-center space-x-3 mb-2">
+            <div className="w-2 h-2 bg-brand-pink animate-pulse rounded-full"></div>
+            <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-slate-500">Secure Console</span>
+          </div>
+          <h1 className="text-2xl font-serif tracking-tighter font-black text-white">KEZA <span className="text-brand-pink font-light italic">CMS</span></h1>
         </div>
-        <nav className="p-4 space-y-2">
+        <nav className="p-6 space-y-4">
           {[
-            { id: 'bookings', label: 'Bookings', icon: LayoutIcon },
-            { id: 'services', label: 'Services', icon: Briefcase },
-            { id: 'gallery', label: 'Gallery', icon: ImageIcon },
-            { id: 'contact', label: 'Contact & Info', icon: Phone },
+            { id: 'bookings', label: 'Client Bookings', icon: LayoutIcon },
+            { id: 'services', label: 'Service Catalog', icon: Briefcase },
+            { id: 'gallery', label: 'Brand Gallery', icon: ImageIcon },
+            { id: 'contact', label: 'Hub Intelligence', icon: Phone },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => { setActiveTab(tab.id as any); setIsAdding(false); setEditingId(null); }}
-              className={`w-full flex items-center px-4 py-3 text-sm font-medium transition-colors ${
-                activeTab === tab.id ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-white hover:bg-stone-800/50'
+              className={`w-full flex items-center px-6 py-4 text-[10px] uppercase tracking-[0.2em] font-bold transition-all rounded-sm ${
+                activeTab === tab.id 
+                  ? 'bg-brand-pink text-white shadow-[0_0_20px_-5px_rgba(255,43,133,0.4)]' 
+                  : 'text-slate-500 hover:text-white hover:bg-white/5'
               }`}
             >
-              <tab.icon size={18} className="mr-3" />
+              <tab.icon size={16} className="mr-4" />
               {tab.label}
             </button>
           ))}
-          <button 
-            onClick={handleLogoutClick}
-            className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-900/10 transition-colors mt-8"
-          >
-            <LogOut size={18} className="mr-3" />
-            Logout
-          </button>
+          <div className="pt-10">
+            <button 
+              onClick={handleLogoutClick}
+              className="w-full flex items-center px-6 py-4 text-[10px] uppercase tracking-[0.2em] font-bold text-red-500/60 hover:text-red-500 hover:bg-red-500/10 transition-all rounded-sm"
+            >
+              <LogOut size={16} className="mr-4" />
+              Terminate Session
+            </button>
+          </div>
         </nav>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow p-6 md:p-12 overflow-y-auto max-h-screen">
-        <header className="flex justify-between items-center mb-10 pb-6 border-b border-stone-200">
-          <h2 className="text-3xl font-serif text-stone-900 capitalize">{activeTab} Management</h2>
-          {saveStatus && (
-            <div className="flex items-center text-green-600 font-bold text-sm animate-in fade-in slide-in-from-top-2">
-              <Check size={18} className="mr-1" /> Changes Saved
-            </div>
-          )}
-          {activeTab !== 'contact' && activeTab !== 'bookings' && !isAdding && !editingId && (
-            <button 
-              onClick={() => setIsAdding(true)}
-              className="px-6 py-2.5 bg-stone-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-stone-800 transition-colors flex items-center"
-            >
-              <Plus size={16} className="mr-2" /> Add New
-            </button>
-          )}
+      <main className="flex-grow p-8 md:p-16 overflow-y-auto max-h-screen">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 pb-10 border-b border-white/5 space-y-6 md:space-y-0">
+          <div className="space-y-2">
+            <span className="text-brand-pink text-[9px] uppercase tracking-[0.4em] font-bold">Management</span>
+            <h2 className="text-4xl font-serif text-white italic capitalize">{activeTab}</h2>
+          </div>
+          <div className="flex items-center space-x-8">
+            {saveStatus && (
+              <div className="flex items-center text-brand-pink font-bold text-[10px] uppercase tracking-widest animate-in fade-in slide-in-from-top-4">
+                <Check size={16} className="mr-2" /> Data Synchronized
+              </div>
+            )}
+            {activeTab !== 'contact' && activeTab !== 'bookings' && !isAdding && !editingId && (
+              <button 
+                onClick={() => setIsAdding(true)}
+                className="btn-brand !py-3 !px-8"
+              >
+                <Plus size={16} className="mr-2" /> Create New
+              </button>
+            )}
+          </div>
         </header>
 
-        {/* Dynamic Forms / Lists */}
-        <div className="animate-in fade-in duration-300">
+        {/* Dynamic Content area */}
+        <div className="animate-in fade-in duration-500">
           
           {/* Bookings Tab */}
           {activeTab === 'bookings' && (
-            <div className="space-y-6">
+            <div className="space-y-8">
               {state.bookings.length === 0 ? (
-                <div className="bg-white p-12 text-center border border-stone-100 italic text-stone-400">
-                  No bookings matching your criteria.
+                <div className="bg-white/[0.02] p-24 text-center border border-white/5 italic text-slate-600 rounded-sm">
+                  Waiting for client requests...
                 </div>
               ) : (
-                <div className="bg-white shadow-sm border border-stone-200 overflow-hidden">
+                <div className="bg-white/[0.02] border border-white/10 overflow-hidden backdrop-blur-sm rounded-sm">
                   <table className="w-full text-left border-collapse">
-                    <thead className="bg-stone-50 border-b border-stone-200">
+                    <thead className="bg-white/[0.01] border-b border-white/10">
                       <tr>
-                        <th className="p-4 text-[10px] uppercase tracking-widest font-bold text-stone-400">Client</th>
-                        <th className="p-4 text-[10px] uppercase tracking-widest font-bold text-stone-400">Service</th>
-                        <th className="p-4 text-[10px] uppercase tracking-widest font-bold text-stone-400">Date/Time</th>
-                        <th className="p-4 text-[10px] uppercase tracking-widest font-bold text-stone-400">Status</th>
-                        <th className="p-4 text-[10px] uppercase tracking-widest font-bold text-stone-400 text-right">Actions</th>
+                        <th className="p-6 text-[9px] uppercase tracking-[0.3em] font-black text-slate-500">Principal</th>
+                        <th className="p-6 text-[9px] uppercase tracking-[0.3em] font-black text-slate-500">Treatment</th>
+                        <th className="p-6 text-[9px] uppercase tracking-[0.3em] font-black text-slate-500">Schedule</th>
+                        <th className="p-6 text-[9px] uppercase tracking-[0.3em] font-black text-slate-500">Status</th>
+                        <th className="p-6 text-[9px] uppercase tracking-[0.3em] font-black text-slate-500 text-right">Records</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-stone-100">
+                    <tbody className="divide-y divide-white/5">
                       {state.bookings.map((booking) => (
-                        <tr key={booking.id} className="hover:bg-stone-50/50 transition-colors">
-                          <td className="p-4">
-                            <div className="font-serif text-stone-900">{booking.name}</div>
-                            <div className="text-xs text-stone-500">{booking.phone}</div>
+                        <tr key={booking.id} className="hover:bg-white/[0.03] transition-all group">
+                          <td className="p-6">
+                            <div className="font-serif text-white text-lg group-hover:text-brand-pink transition-colors">{booking.name}</div>
+                            <div className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-1">{booking.phone}</div>
                           </td>
-                          <td className="p-4">
-                            <div className="text-sm text-stone-700">{booking.serviceName}</div>
+                          <td className="p-6">
+                            <div className="text-sm font-light text-slate-400 italic">“{booking.serviceName}”</div>
                           </td>
-                          <td className="p-4">
-                            <div className="text-sm text-stone-700">{booking.date}</div>
-                            <div className="text-xs text-stone-500">{booking.time}</div>
+                          <td className="p-6">
+                            <div className="text-[10px] text-white uppercase tracking-widest font-bold font-mono">{booking.date}</div>
+                            <div className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">{booking.time}</div>
                           </td>
-                          <td className="p-4">
+                          <td className="p-6">
                             <select 
                               value={booking.status}
                               onChange={(e) => handleBookingStatusUpdate(booking.id, e.target.value as any)}
-                              className={`text-[10px] uppercase tracking-tighter font-bold px-2 py-1 border rounded focus:outline-none ${
-                                booking.status === 'confirmed' ? 'bg-green-50 text-green-700 border-green-200' : 
-                                booking.status === 'cancelled' ? 'bg-red-50 text-red-700 border-red-200' : 
-                                'bg-yellow-50 text-yellow-700 border-yellow-200'
+                              className={`text-[9px] uppercase tracking-widest font-black px-4 py-2 border rounded-none focus:outline-none transition-all cursor-pointer ${
+                                booking.status === 'confirmed' ? 'bg-brand-pink/10 text-brand-pink border-brand-pink/30' : 
+                                booking.status === 'cancelled' ? 'bg-red-500/10 text-red-500 border-red-500/30' : 
+                                'bg-slate-500/10 text-slate-400 border-white/10'
                               }`}
                             >
-                              <option value="pending">Pending</option>
-                              <option value="confirmed">Confirmed</option>
-                              <option value="cancelled">Cancelled</option>
+                              <option value="pending" className="bg-brand-black">Awaiting Confirmation</option>
+                              <option value="confirmed" className="bg-brand-black">Confirmed</option>
+                              <option value="cancelled" className="bg-brand-black">Cancelled</option>
                             </select>
                           </td>
-                          <td className="p-4 text-right">
-                            <div className="flex justify-end space-x-2">
-                              <button 
-                                onClick={() => handleBookingDelete(booking.id)}
-                                className="p-2 text-stone-400 hover:text-red-600 transition-colors"
-                                title="Delete Record"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
+                          <td className="p-6 text-right">
+                            <button 
+                              onClick={() => handleBookingDelete(booking.id)}
+                              className="p-3 text-slate-600 hover:text-red-500 transition-all rounded-full hover:bg-red-500/10"
+                              title="Archive Record"
+                            >
+                              <Trash2 size={16} />
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -230,68 +265,84 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
 
           {/* Add/Edit Service Form */}
           {(isAdding || editingId) && activeTab === 'services' && (
-            <div className="bg-white p-8 shadow-sm border border-stone-200 mb-10 max-w-2xl">
-              <h3 className="text-xl font-serif mb-6">{editingId ? 'Edit Service' : 'Add New Service'}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white/[0.02] p-12 md:p-16 border border-white/5 mb-16 max-w-4xl backdrop-blur-xl">
+              <h3 className="text-3xl font-serif text-white mb-12 italic">{editingId ? 'Edit Performance' : 'Define New Service'}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div className="col-span-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Service Name</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Service Identity</label>
                   <input 
                     type="text" 
                     defaultValue={editingId ? state.services.find(s => s.id === editingId)?.name : ''}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/10 font-light"
+                    placeholder="E.g. Signature Silk Press"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Description</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Manifesto / Description</label>
                   <textarea 
                     defaultValue={editingId ? state.services.find(s => s.id === editingId)?.description : ''}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
-                    rows={3}
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/10 font-light resize-none"
+                    rows={2}
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Price (e.g. 10,000 RWF)</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Investment (Price)</label>
                   <input 
                     type="text" 
                     defaultValue={editingId ? state.services.find(s => s.id === editingId)?.price : ''}
                     onChange={(e) => setFormData({...formData, price: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/10 font-light"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Category</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Service Tier (Category)</label>
                   <input 
                     type="text" 
                     defaultValue={editingId ? state.services.find(s => s.id === editingId)?.category : ''}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/10 font-light"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Image URL</label>
-                  <input 
-                    type="text" 
-                    defaultValue={editingId ? state.services.find(s => s.id === editingId)?.imageUrl : ''}
-                    onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
-                    placeholder="https://..."
-                  />
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Visual Selection (Local Upload or URL)</label>
+                  <div className="flex flex-col md:flex-row gap-6 items-start">
+                    <div className="flex-grow w-full">
+                      <input 
+                        type="text" 
+                        value={formData.imageUrl || (editingId ? state.services.find(s => s.id === editingId)?.imageUrl : '')}
+                        onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
+                        className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/10 font-light mb-2"
+                        placeholder="Paste image URL..."
+                      />
+                    </div>
+                    <div className="flex-shrink-0">
+                      <label className="btn-brand !py-3 !px-6 cursor-pointer inline-block">
+                        {uploading ? 'Processing...' : 'Upload Image'}
+                        <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'imageUrl')} />
+                      </label>
+                    </div>
+                  </div>
+                  {formData.imageUrl && (
+                    <div className="mt-6 w-32 h-32 border border-white/10 overflow-hidden">
+                      <img src={formData.imageUrl} className="w-full h-full object-cover" alt="Preview" />
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="mt-8 flex space-x-4">
+              <div className="mt-16 flex space-x-8">
                 <button 
                   onClick={editingId ? () => handleServiceUpdate(editingId) : handleServiceAdd}
-                  className="px-8 py-3 bg-stone-900 text-white text-xs uppercase tracking-widest font-bold"
+                  className="btn-brand !px-12"
                 >
-                  Save Changes
+                  Confirm Evolution
                 </button>
                 <button 
                   onClick={() => { setIsAdding(false); setEditingId(null); setFormData({}); }}
-                  className="px-8 py-3 bg-stone-100 text-stone-500 text-xs uppercase tracking-widest font-bold"
+                  className="px-12 py-4 border border-white/10 text-slate-500 text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-white/5 transition-all"
                 >
-                  Cancel
+                  Discard
                 </button>
               </div>
             </div>
@@ -299,47 +350,65 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
 
           {/* Add Gallery Item Form */}
           {isAdding && activeTab === 'gallery' && (
-            <div className="bg-white p-8 shadow-sm border border-stone-200 mb-10 max-w-2xl">
-              <h3 className="text-xl font-serif mb-6">Add New Gallery Image</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Image Title</label>
+            <div className="bg-white/[0.02] p-12 md:p-16 border border-white/5 mb-16 max-w-4xl backdrop-blur-xl">
+              <h3 className="text-3xl font-serif text-white mb-12 italic">Capture New Moment</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="col-span-2">
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Image Narrative (Title)</label>
                   <input 
                     type="text" 
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/10 font-light"
+                    placeholder="E.g. Signature Bridal Glow"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Category</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Aesthetic Category</label>
                   <input 
                     type="text" 
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/10 font-light"
+                    placeholder="E.g. Hair Artistry"
                   />
                 </div>
-                <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Image URL</label>
-                  <input 
-                    type="text" 
-                    onChange={(e) => setFormData({...formData, url: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
-                    placeholder="https://..."
-                  />
+                <div className="col-span-2">
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Visual Selection (Local Upload or URL)</label>
+                  <div className="flex flex-col md:flex-row gap-6 items-start">
+                    <div className="flex-grow w-full">
+                      <input 
+                        type="text" 
+                        value={formData.url || ''}
+                        onChange={(e) => setFormData({...formData, url: e.target.value})}
+                        className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/10 font-light mb-2"
+                        placeholder="Paste image URL..."
+                      />
+                    </div>
+                    <div className="flex-shrink-0">
+                      <label className="btn-brand !py-3 !px-6 cursor-pointer inline-block">
+                        {uploading ? 'Processing...' : 'Upload Local Image'}
+                        <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'url')} />
+                      </label>
+                    </div>
+                  </div>
+                  {formData.url && (
+                    <div className="mt-6 w-32 h-32 border border-white/10 overflow-hidden">
+                      <img src={formData.url} className="w-full h-full object-cover" alt="Preview" />
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="mt-8 flex space-x-4">
+              <div className="mt-16 flex space-x-8">
                 <button 
                   onClick={handleGalleryAdd}
-                  className="px-8 py-3 bg-stone-900 text-white text-xs uppercase tracking-widest font-bold"
+                  className="btn-brand !px-12"
                 >
-                  Add to Gallery
+                  Induct into Gallery
                 </button>
                 <button 
                   onClick={() => { setIsAdding(false); setFormData({}); }}
-                  className="px-8 py-3 bg-stone-100 text-stone-500 text-xs uppercase tracking-widest font-bold"
+                  className="px-12 py-4 border border-white/10 text-slate-500 text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-white/5 transition-all"
                 >
-                  Cancel
+                  Discard
                 </button>
               </div>
             </div>
@@ -347,100 +416,100 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
 
           {/* Contact Tab */}
           {activeTab === 'contact' && (
-            <div className="bg-white p-8 shadow-sm border border-stone-200 max-w-4xl">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white/[0.02] p-12 md:p-16 border border-white/5 max-w-5xl backdrop-blur-xl">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <div className="col-span-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">About Text</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Brand Bio</label>
                   <textarea 
                     defaultValue={state.contact.aboutText}
                     onChange={(e) => setFormData({...formData, aboutText: e.target.value})}
-                    className="w-full p-4 bg-stone-50 border border-stone-100 text-sm"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white font-light leading-loose"
                     rows={4}
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Phone Number</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Liaison Phone</label>
                   <input 
                     type="text" 
                     defaultValue={state.contact.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">WhatsApp Number (incl. +)</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">WhatsApp Liaison (+)</label>
                   <input 
                     type="text" 
                     defaultValue={state.contact.whatsapp}
                     onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Email Address</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Official Email</label>
                   <input 
                     type="text" 
                     defaultValue={state.contact.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Address</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Global Address</label>
                   <input 
                     type="text" 
                     defaultValue={state.contact.address}
                     onChange={(e) => setFormData({...formData, address: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-sm"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-2 block">Google Maps Embed URL</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 block">Maps Intelligence (Embed URL)</label>
                   <input 
                     type="text" 
                     defaultValue={state.contact.mapsEmbed}
                     onChange={(e) => setFormData({...formData, mapsEmbed: e.target.value})}
-                    className="w-full p-3 bg-stone-50 border border-stone-100 text-xs"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white font-mono text-xs"
                   />
                 </div>
               </div>
               <button 
                 onClick={handleContactUpdate}
-                className="mt-10 px-10 py-4 bg-stone-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-stone-800 transition-colors"
+                className="mt-16 btn-brand !px-16"
               >
-                Update Contact Info
+                Update Strategic Intel
               </button>
             </div>
           )}
 
           {/* List Display (only if not adding/editing) */}
           {!isAdding && !editingId && activeTab === 'services' && (
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-6">
               {state.services.map(s => (
-                <div key={s.id} className="bg-white p-6 shadow-sm border border-stone-200 flex items-center justify-between group">
-                  <div className="flex items-center space-x-6">
-                    <div className="w-16 h-16 bg-stone-100 overflow-hidden flex-shrink-0">
-                      <img src={s.imageUrl} alt={s.name} className="w-full h-full object-cover" />
+                <div key={s.id} className="bg-white/[0.02] p-8 border border-white/5 flex items-center justify-between group hover:bg-white/[0.04] transition-all">
+                  <div className="flex items-center space-x-10">
+                    <div className="w-24 h-24 bg-brand-black overflow-hidden flex-shrink-0 border border-white/10">
+                      <img src={s.imageUrl} alt={s.name} className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700" />
                     </div>
                     <div>
-                      <h4 className="font-serif text-lg text-stone-900">{s.name}</h4>
-                      <div className="flex space-x-4 text-xs text-stone-400 uppercase tracking-widest mt-1">
-                        <span>{s.category}</span>
-                        <span>•</span>
+                      <h4 className="font-serif text-2xl text-white italic transition-colors group-hover:text-brand-pink">{s.name}</h4>
+                      <div className="flex items-center space-x-6 text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mt-3">
+                        <span className="text-brand-pink">{s.category}</span>
+                        <span className="opacity-20 text-white">|</span>
                         <span>{s.price}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex space-x-4 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                     <button 
                       onClick={() => { setEditingId(s.id); setFormData(s); }}
-                      className="p-2 text-stone-400 hover:text-stone-900 hover:bg-stone-100 transition-colors"
+                      className="p-4 bg-white/5 text-white hover:text-brand-pink transition-all rounded-full"
                     >
                       <Edit size={20} />
                     </button>
                     <button 
                       onClick={() => handleServiceDelete(s.id)}
-                      className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                      className="p-4 bg-white/5 text-white hover:text-red-500 transition-all rounded-full"
                     >
                       <Trash2 size={20} />
                     </button>
@@ -451,14 +520,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
           )}
 
           {!isAdding && activeTab === 'gallery' && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {state.gallery.map(g => (
-                <div key={g.id} className="relative aspect-square group overflow-hidden bg-stone-100">
-                  <img src={g.url} alt={g.title} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-stone-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-4">
+                <div key={g.id} className="relative aspect-square group overflow-hidden bg-brand-black border border-white/5">
+                  <img src={g.url} alt={g.title} className="w-full h-full object-cover grayscale brightness-50 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-1000" />
+                  <div className="absolute inset-0 bg-brand-black/80 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center space-y-6">
+                    <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-white px-6 text-center">{g.title}</span>
                     <button 
                       onClick={() => handleGalleryDelete(g.id)}
-                      className="p-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
+                      className="p-4 bg-red-600/20 text-red-500 rounded-full hover:bg-red-600 hover:text-white transition-all shadow-xl"
                     >
                       <Trash2 size={20} />
                     </button>

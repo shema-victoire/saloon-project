@@ -27,53 +27,59 @@ const AdminLogin: React.FC<AdminLoginProps> = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white shadow-2xl overflow-hidden border border-stone-200">
-        <div className="bg-stone-900 p-10 text-center">
-          <h1 className="text-2xl font-serif text-white tracking-widest uppercase">Admin Access</h1>
-          <p className="text-stone-400 text-sm mt-2 font-medium tracking-tight">KEZA GLAM HUB CMS</p>
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6">
+      <div className="w-full max-w-md bg-brand-black shadow-[0_0_100px_-20px_rgba(255,43,133,0.15)] border border-white/5 overflow-hidden">
+        <div className="p-16 text-center border-b border-white/5 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-brand-pink animate-in slide-in-from-left duration-1000"></div>
+          <div className="flex items-center justify-center space-x-3 mb-6">
+            <div className="w-2 h-2 bg-brand-pink animate-pulse rounded-full"></div>
+            <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-slate-500">Security Check</span>
+          </div>
+          <h1 className="text-3xl font-serif text-white tracking-widest font-black italic">CON<span className="text-brand-pink not-italic">SOLE</span></h1>
+          <p className="text-slate-500 text-[10px] mt-4 uppercase tracking-[0.3em] font-light">KEZA GLAM HUB — RESTRICTED AREA</p>
         </div>
         
-        <div className="p-10 space-y-8">
-          <div className="text-center space-y-4">
-            <p className="text-sm text-stone-600 leading-relaxed font-light">
-              This area is restricted to salon administrators. Please authenticate with your registered Google account.
+        <div className="p-16 space-y-12 backdrop-blur-3xl">
+          <div className="text-center">
+            <p className="text-xs text-slate-500 leading-relaxed font-light italic">
+              Please authenticate using your registered administrative credentials to access the command center.
             </p>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             {error && (
-              <div className="bg-red-50 text-red-600 text-xs p-4 border border-red-100 flex items-center animate-in fade-in slide-in-from-top-2">
-                <span className="font-bold mr-2">Access Denied:</span> {error}
+              <div className="bg-red-500/10 text-red-500 text-[10px] uppercase tracking-widest p-4 border border-red-500/20 flex items-center animate-in fade-in slide-in-from-top-4">
+                <span className="font-black mr-2">Error:</span> {error}
               </div>
             )}
             
             <button 
               onClick={handleGoogleLogin}
               disabled={loading}
-              className="w-full py-4 bg-white border-2 border-stone-900 text-stone-900 font-bold uppercase tracking-widest text-xs hover:bg-stone-900 hover:text-white transition-all flex items-center justify-center group disabled:opacity-50 disabled:cursor-wait"
+              className="btn-brand w-full !py-5 group relative overflow-hidden disabled:opacity-50"
             >
               {loading ? (
-                <span className="flex items-center">
-                  <div className="w-4 h-4 border-2 border-stone-900 border-t-transparent rounded-full animate-spin mr-2 group-hover:border-white group-hover:border-t-transparent"></div>
-                  Verifying...
+                <span className="flex items-center justify-center">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
+                  Verifying Identity...
                 </span>
               ) : (
-                <>
-                  <LogIn size={16} className="mr-2" /> 
-                  Sign in with Google
-                </>
+                <span className="flex items-center justify-center">
+                  <LogIn size={16} className="mr-3 group-hover:translate-x-1 transition-transform" /> 
+                  Authorize with Google
+                </span>
               )}
             </button>
           </div>
 
-          <div className="flex flex-col items-center space-y-4 pt-4 border-t border-stone-50">
-            <Link to="/" className="text-stone-400 hover:text-stone-900 transition-colors flex items-center text-[10px] uppercase tracking-[0.2em] font-bold">
-              <ArrowLeft size={14} className="mr-2" /> Back to Website
+          <div className="flex flex-col items-center space-y-8 pt-8 border-t border-white/5">
+            <Link to="/" className="text-slate-500 hover:text-white transition-colors flex items-center text-[10px] uppercase tracking-[0.4em] font-bold">
+              <ArrowLeft size={14} className="mr-3" /> Website
             </Link>
-            <p className="text-center text-[10px] text-stone-300 uppercase tracking-widest">
-              Secured with Firebase Authentication
-            </p>
+            <div className="flex items-center space-x-2 opacity-20">
+              <div className="w-1 h-1 bg-white rounded-full"></div>
+              <p className="text-[8px] text-white uppercase tracking-[0.5em]">End-to-End Encryption</p>
+            </div>
           </div>
         </div>
       </div>

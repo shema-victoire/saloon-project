@@ -9,80 +9,67 @@ interface ContactProps {
 
 const Contact: React.FC<ContactProps> = ({ contact }) => {
   return (
-    <div className="bg-[#FDFBF7] min-h-screen py-24 animate-in fade-in duration-500">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="text-center mb-20">
-          <span className="text-stone-500 uppercase tracking-[0.4em] text-xs mb-4 block">Get In Touch</span>
-          <h1 className="text-4xl md:text-6xl font-serif text-stone-900 mb-8">Contact Us</h1>
-          <p className="text-stone-500 max-w-2xl mx-auto leading-relaxed">
+    <div className="bg-brand-black min-h-screen py-32 animate-in fade-in duration-700">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        <header className="text-center mb-32 max-w-3xl mx-auto space-y-8">
+          <span className="text-brand-pink uppercase tracking-[0.4em] text-[10px] font-bold block">Contact</span>
+          <h1 className="text-5xl md:text-7xl font-serif text-white font-light">The <span className="italic">Concierge</span></h1>
+          <p className="text-slate-400 font-light italic leading-loose">
             Visit us in our serene Kigali location or reach out through any of our channels. We look forward to welcoming you to the hub.
           </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-32">
           {/* Info Side */}
           <div className="space-y-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white p-8 shadow-sm border border-stone-100 flex flex-col items-center text-center">
-                <div className="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mb-4 text-stone-900">
-                  <Phone size={20} />
+              {[
+                { icon: Phone, title: "Phone", value: contact.phone, color: "text-white" },
+                { icon: Mail, title: "Email", value: contact.email, color: "text-white" },
+                { icon: MessageSquare, title: "WhatsApp", value: "Chat With Us", color: "text-brand-pink", link: `https://wa.me/${contact.whatsapp.replace('+', '')}` },
+                { icon: Clock, title: "Hours", value: "Mon-Sat: 9am - 8pm", color: "text-white" }
+              ].map((item, idx) => (
+                <div key={idx} className="bg-white/[0.02] border border-white/5 p-10 flex flex-col items-center text-center group hover:bg-white/[0.04] transition-all">
+                  <div className="w-16 h-16 bg-white/[0.05] rounded-full flex items-center justify-center mb-6 text-brand-pink group-hover:scale-110 transition-transform">
+                    <item.icon size={24} />
+                  </div>
+                  <h3 className="text-[9px] uppercase tracking-[0.4em] font-bold text-slate-500 mb-3">{item.title}</h3>
+                  {item.link ? (
+                    <a href={item.link} target="_blank" rel="noreferrer" className={`${item.color} font-serif text-lg italic hover:underline`}>
+                      {item.value}
+                    </a>
+                  ) : (
+                    <p className={`${item.color} font-serif text-lg italic`}>{item.value}</p>
+                  )}
                 </div>
-                <h3 className="text-xs uppercase tracking-widest font-bold text-stone-400 mb-2">Phone</h3>
-                <p className="text-stone-900 font-medium">{contact.phone}</p>
-              </div>
-
-              <div className="bg-white p-8 shadow-sm border border-stone-100 flex flex-col items-center text-center">
-                <div className="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mb-4 text-stone-900">
-                  <Mail size={20} />
-                </div>
-                <h3 className="text-xs uppercase tracking-widest font-bold text-stone-400 mb-2">Email</h3>
-                <p className="text-stone-900 font-medium">{contact.email}</p>
-              </div>
-
-              <div className="bg-white p-8 shadow-sm border border-stone-100 flex flex-col items-center text-center">
-                <div className="w-12 h-12 bg-[#25D366]/10 rounded-full flex items-center justify-center mb-4 text-[#25D366]">
-                  <MessageSquare size={20} />
-                </div>
-                <h3 className="text-xs uppercase tracking-widest font-bold text-stone-400 mb-2">WhatsApp</h3>
-                <a href={`https://wa.me/${contact.whatsapp.replace('+', '')}`} target="_blank" rel="noreferrer" className="text-stone-900 font-medium hover:underline">
-                  Chat With Us
-                </a>
-              </div>
-
-              <div className="bg-white p-8 shadow-sm border border-stone-100 flex flex-col items-center text-center">
-                <div className="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mb-4 text-stone-900">
-                  <Clock size={20} />
-                </div>
-                <h3 className="text-xs uppercase tracking-widest font-bold text-stone-400 mb-2">Working Hours</h3>
-                <p className="text-stone-900 font-medium text-sm">Mon-Sat: 9am - 8pm</p>
-              </div>
+              ))}
             </div>
 
-            <div className="bg-white p-10 shadow-sm border border-stone-100">
-              <h3 className="text-2xl font-serif text-stone-900 mb-6 flex items-center">
-                <MapPin className="mr-3" size={24} /> Our Location
+            <div className="bg-white/[0.02] border border-white/5 p-12 lg:p-16">
+              <h3 className="text-3xl font-serif text-white mb-8 flex items-center italic">
+                <MapPin className="mr-6 text-brand-pink" size={32} /> Our Location
               </h3>
-              <p className="text-stone-500 mb-8 leading-relaxed">
+              <p className="text-slate-400 mb-12 leading-loose font-light italic text-lg">
                 {contact.address}
               </p>
-              <div className="flex space-x-4 pt-4 border-t border-stone-50">
-                <a href="#" className="flex items-center text-xs uppercase tracking-widest font-bold text-stone-400 hover:text-stone-900 transition-colors">
-                  <Instagram size={18} className="mr-2" /> Instagram
+              <div className="flex space-x-12 pt-8 border-t border-white/10">
+                <a href="#" className="flex items-center text-[10px] uppercase tracking-[0.3em] font-bold text-slate-500 hover:text-brand-pink transition-colors">
+                  <Instagram size={20} className="mr-4" /> Instagram
                 </a>
-                <a href="#" className="flex items-center text-xs uppercase tracking-widest font-bold text-stone-400 hover:text-stone-900 transition-colors">
-                  <Facebook size={18} className="mr-2" /> Facebook
+                <a href="#" className="flex items-center text-[10px] uppercase tracking-[0.3em] font-bold text-slate-500 hover:text-brand-pink transition-colors">
+                  <Facebook size={20} className="mr-4" /> Facebook
                 </a>
               </div>
             </div>
           </div>
 
           {/* Map Side */}
-          <div className="h-[400px] lg:h-full min-h-[500px] bg-stone-200 relative overflow-hidden shadow-xl">
+          <div className="h-[500px] lg:h-auto min-h-[600px] bg-white/[0.02] border border-white/5 relative overflow-hidden grayscale brightness-75 hover:grayscale-0 hover:brightness-100 transition-all duration-1000 shadow-2xl">
             <iframe 
               src={contact.mapsEmbed}
               width="100%" 
               height="100%" 
-              style={{ border: 0 }} 
+              style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }} 
               allowFullScreen={true} 
               loading="lazy" 
               referrerPolicy="no-referrer-when-downgrade"

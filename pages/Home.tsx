@@ -12,77 +12,100 @@ const Home: React.FC<HomeProps> = ({ services }) => {
   const featuredServices = services.slice(0, 3);
 
   return (
-    <div className="animate-in fade-in duration-700">
+    <div className="animate-in fade-in duration-1000 bg-brand-black">
       {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0">
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-20">
+        {/* Background Image & Overlays */}
+        <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=2000" 
-            alt="Luxury Salon Interior" 
-            className="w-full h-full object-cover brightness-50"
+            src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&q=80&w=2000" 
+            alt="Luxury Studio" 
+            className="w-full h-full object-cover grayscale brightness-[0.4] scale-105 animate-slow-zoom"
           />
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-black/10 via-brand-black/40 to-brand-black"></div>
+          
+          {/* Subtle Atmospheric Accents */}
+          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-brand-pink/5 rounded-full blur-[160px] animate-pulse pointer-events-none"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-brand-pink/10 rounded-full blur-[140px] delay-700 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] opacity-[0.03] pointer-events-none"></div>
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-          <div className="max-w-3xl space-y-6">
-            <span className="uppercase tracking-[0.5em] text-xs font-bold text-stone-300 animate-in slide-in-from-bottom-4 duration-1000">Excellence Defined</span>
-            <h1 className="text-5xl md:text-8xl font-serif font-bold leading-[1.1] animate-in slide-in-from-bottom-6 duration-1000 delay-200">
-              Where Beauty <br /><span className="italic text-stone-300">Meets Perfection.</span>
-            </h1>
-            <p className="text-lg md:text-xl text-stone-200 font-light leading-relaxed max-w-xl animate-in slide-in-from-bottom-8 duration-1000 delay-300">
-              Step into Kigali's most prestigious salon. From signature silk presses to bespoke bridal artistry, we craft experiences that celebrate your unique glow.
-            </p>
-            <div className="pt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 animate-in slide-in-from-bottom-10 duration-1000 delay-400">
-              <Link to="/book" className="px-12 py-5 bg-stone-100 text-stone-900 font-bold uppercase tracking-widest text-xs hover:bg-white transition-all text-center shadow-2xl">
-                Book Appointment
-              </Link>
-              <Link to="/services" className="px-12 py-5 border border-white/40 text-white font-bold uppercase tracking-widest text-xs backdrop-blur-sm hover:bg-white hover:text-stone-900 transition-all text-center">
-                Our Services
-              </Link>
-            </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 text-center space-y-12">
+          <div className="flex items-center justify-center space-x-4 mb-2">
+            <div className="h-[1px] w-12 bg-brand-pink/30"></div>
+            <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-brand-pink">Excellence & Glamour Only</span>
+            <div className="h-[1px] w-12 bg-brand-pink/30"></div>
           </div>
+
+          <h1 className="title-massive flex flex-col items-center select-none">
+            <span className="text-white drop-shadow-2xl">KEZ</span>
+            <span className="text-brand-pink mt-[-0.15em] italic font-black translate-x-4">A.</span>
+          </h1>
+
+          <div className="max-w-2xl mx-auto mt-[-2rem]">
+            <p className="text-sm md:text-base text-slate-400 font-light leading-loose tracking-wide italic">
+              Rwanda's most exclusive beauty destination. Uncompromising artistry for <br className="hidden md:block" /> the elite who demand nothing but perfection.
+            </p>
+          </div>
+
+          <div className="pt-8 animate-in slide-in-from-bottom-8 duration-1000 delay-500">
+            <Link to="/book" className="btn-brand !py-6 !px-16 !text-sm group relative overflow-hidden transition-transform active:scale-95 shadow-[0_0_40px_-10px_rgba(255,43,133,0.3)]">
+              <span className="relative z-10">Make An Appointment</span>
+              <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"></div>
+            </Link>
+          </div>
+        </div>
+        
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center space-y-4 opacity-30 select-none">
+          <span className="text-[9px] uppercase tracking-[0.4em] font-bold">Discover</span>
+          <div className="w-[1px] h-12 bg-gradient-to-b from-white to-transparent"></div>
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-32 bg-[#FDFBF7]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="relative group">
-              <div className="absolute -top-6 -left-6 w-full h-full border border-stone-200 transition-transform group-hover:translate-x-2 group-hover:translate-y-2"></div>
-              <img 
-                src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=1200" 
-                alt="Salon Ambience" 
-                className="relative z-10 w-full aspect-[4/5] object-cover shadow-2xl"
-              />
-              <div className="absolute -bottom-10 -right-10 bg-stone-900 text-white p-10 hidden md:block z-20">
-                <span className="text-4xl font-serif block mb-2">10+</span>
-                <span className="text-[10px] uppercase tracking-widest font-bold text-stone-400">Years of Artistry</span>
+      {/* Philosophy Section */}
+      <section className="py-40 bg-brand-black border-y border-white/5 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+            <div className="relative">
+              <div className="aspect-[4/5] overflow-hidden group">
+                <img 
+                  src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=1200" 
+                  alt="Elite Ambience" 
+                  className="w-full h-full object-cover grayscale brightness-75 group-hover:scale-105 transition-transform duration-[2s]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-transparent to-transparent opacity-80"></div>
+              </div>
+              <div className="absolute top-1/2 -right-12 hidden lg:block -translate-y-1/2">
+                <div className="bg-brand-pink p-12 shadow-2xl">
+                  <span className="text-7xl font-serif font-black block mb-2 leading-none">10</span>
+                  <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-white/80">Years Expertise</span>
+                </div>
               </div>
             </div>
             
             <div className="space-y-12">
-              <div className="space-y-4">
-                <span className="text-stone-500 uppercase tracking-[0.3em] text-xs font-bold block">The Keza Standard</span>
-                <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">Elevating Beauty in the Heart of Kigali</h2>
-                <p className="text-stone-500 text-lg leading-relaxed">
-                  Located in the prestigious Kigali Heights, Keza Glam Hub is more than a salon—it's a sanctuary for the modern professional woman who refuses to compromise on quality.
+              <div className="space-y-8">
+                <span className="text-brand-pink uppercase tracking-[0.4em] text-[10px] font-bold flex items-center">
+                  <div className="w-8 h-[1px] bg-brand-pink mr-4"></div> The Philosophy
+                </span>
+                <h2 className="text-4xl md:text-6xl font-serif text-white leading-[1.1] font-light">
+                  Crafting <span className="text-brand-pink italic font-serif">Confidence</span> Through Artistry.
+                </h2>
+                <p className="text-slate-400 text-lg leading-relaxed font-light">
+                  Keza Glam Hub is more than a salon; it is a ritual. We believe that true beauty is not manufactured but revealed through meticulous attention and bespoke care.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-8">
+              <div className="space-y-10">
                 {[
-                  { icon: Sparkles, title: "Premium Global Brands", desc: "We partner with brands like Mizani, OPI, and MAC to ensure your skin and hair receive only the finest ingredients." },
-                  { icon: Star, title: "Master Stylists", desc: "Our team is internationally trained and specializes in a wide range of hair textures and skin tones." },
-                  { icon: Heart, title: "Curated Experience", desc: "Enjoy premium coffee, serene music, and a private consultation with every session." }
+                  { title: "Master Craftsmanship", desc: "Our specialists are masters of their craft, trained internationally to deliver global standards locally." },
+                  { title: "Indulgent Atmosphere", desc: "A private santuary where time slows down. Relax with curated jazz and premium refreshments." },
+                  { title: "Luxury Product Selection", desc: "Exclusively utilizing elite brands like Mizani, OPI, and MAC for unparalleled results." }
                 ].map((item, idx) => (
-                  <div key={idx} className="flex space-x-6 group">
-                    <div className="flex-shrink-0 w-12 h-12 bg-white border border-stone-100 rounded-full flex items-center justify-center text-stone-900 group-hover:bg-stone-900 group-hover:text-white transition-all shadow-sm">
-                      <item.icon size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-stone-900 mb-2 uppercase tracking-widest text-sm">{item.title}</h3>
-                      <p className="text-stone-500 text-sm leading-relaxed">{item.desc}</p>
-                    </div>
+                  <div key={idx} className="group cursor-default border-l border-white/5 pl-8 hover:border-brand-pink transition-colors">
+                    <h3 className="text-xs uppercase tracking-[0.2em] font-bold text-white mb-3 group-hover:text-brand-pink transition-colors">{item.title}</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed font-light">{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -91,41 +114,38 @@ const Home: React.FC<HomeProps> = ({ services }) => {
         </div>
       </section>
 
-      {/* Featured Services Preview */}
-      <section className="py-32 bg-stone-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-20">
-            <div className="max-w-xl space-y-4">
-              <span className="text-stone-500 uppercase tracking-[0.3em] text-xs font-bold block">Refined Selection</span>
-              <h2 className="text-4xl md:text-6xl font-serif text-stone-900">Most Loved Treatments</h2>
+      {/* Services Menu Preview */}
+      <section className="py-40">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-24 space-y-8 md:space-y-0">
+            <div className="space-y-4">
+              <span className="text-brand-pink uppercase tracking-[0.4em] text-[10px] font-bold">The Signature Menu</span>
+              <h2 className="text-4xl md:text-6xl font-serif text-white font-light uppercase tracking-tighter">Iconic Treatments</h2>
             </div>
-            <Link to="/services" className="mt-8 md:mt-0 flex items-center text-stone-900 uppercase tracking-widest text-xs font-bold group border-b border-stone-300 pb-2">
-              View Menu <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" size={16} />
+            <Link to="/services" className="group flex items-center text-white uppercase tracking-[0.3em] text-[10px] font-bold transition-all hover:text-brand-pink">
+              Full Menu <ArrowRight className="ml-4 group-hover:translate-x-2 transition-transform text-brand-pink" size={16} />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featuredServices.map((service) => (
-              <div key={service.id} className="bg-white overflow-hidden shadow-sm hover:shadow-2xl transition-all group flex flex-col h-full">
-                <div className="h-80 overflow-hidden relative">
+              <div key={service.id} className="relative group overflow-hidden border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-500 h-[600px]">
+                <div className="h-2/3 overflow-hidden">
                   <img 
-                    src={service.imageUrl || `https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=800`} 
+                    src={service.imageUrl || `https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=800`} 
                     alt={service.name} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
+                    className="w-full h-full object-cover grayscale brightness-75 group-hover:scale-110 group-hover:grayscale-0 transition-all duration-[1.5s]" 
                   />
-                  <div className="absolute top-6 left-6">
-                    <span className="bg-white/95 backdrop-blur-sm text-stone-900 px-5 py-2 text-[10px] uppercase tracking-[0.2em] font-bold shadow-sm">
-                      {service.category}
-                    </span>
-                  </div>
                 </div>
-                <div className="p-10 flex flex-col flex-grow">
-                  <h3 className="text-2xl font-serif mb-4 text-stone-900 leading-tight">{service.name}</h3>
-                  <p className="text-stone-500 text-sm leading-relaxed mb-8 flex-grow line-clamp-3">{service.description}</p>
-                  <div className="flex justify-between items-center border-t border-stone-50 pt-8 mt-auto">
-                    <span className="text-stone-900 font-bold tracking-tight">{service.price}</span>
-                    <Link to="/book" className="text-stone-400 hover:text-stone-900 transition-colors">
-                      <ArrowRight size={24} />
+                <div className="p-10 flex flex-col h-1/3 justify-between">
+                  <div>
+                    <span className="text-brand-pink text-[9px] uppercase tracking-[0.4em] font-bold mb-3 block">{service.category}</span>
+                    <h3 className="text-2xl font-serif text-white group-hover:text-brand-pink transition-colors">{service.name}</h3>
+                  </div>
+                  <div className="flex justify-between items-center pt-6 border-t border-white/5">
+                    <span className="text-white font-serif font-black text-xl italic">{service.price}</span>
+                    <Link to="/book" className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-brand-pink group-hover:border-brand-pink transition-all">
+                      <ArrowRight size={18} className="text-white" />
                     </Link>
                   </div>
                 </div>
@@ -135,24 +155,22 @@ const Home: React.FC<HomeProps> = ({ services }) => {
         </div>
       </section>
 
-      {/* Booking CTA Banner */}
-      <section className="py-32 bg-stone-900 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/2 h-full opacity-[0.03] pointer-events-none">
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="h-full w-full rotate-45">
-            <path fill="#FFFFFF" d="M47.5,-52.4C61.4,-44.7,72.4,-30.2,74.7,-14.8C77,0.7,70.5,17,60.8,30.3C51,43.7,38,54.1,23.3,59.3C8.6,64.5,-7.7,64.5,-23.4,59.3C-39.1,54.1,-54.1,43.7,-61.8,29.4C-69.5,15.1,-69.8,-3.2,-64.2,-19.1C-58.6,-35,-47,-48.5,-33.1,-56.3C-19.1,-64.1,-2.9,-66.2,14.8,-63C32.5,-59.8,47.5,-52.4,47.5,-52.4Z" transform="translate(100 100)" />
-          </svg>
-        </div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h2 className="text-4xl md:text-7xl font-serif text-white mb-10 leading-tight italic">Luxury is a phone <br /> call away.</h2>
-          <p className="text-stone-400 max-w-xl mx-auto mb-12 text-lg font-light leading-relaxed">
-            Our schedule is limited and appointments are highly recommended to ensure you receive the dedicated attention you deserve.
+      {/* Immersive CTA */}
+      <section className="relative py-48 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=2000')] bg-fixed bg-cover bg-center grayscale brightness-[0.2]"></div>
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-12">
+          <h2 className="text-5xl md:text-8xl font-serif text-white font-light italic leading-tight">
+            Reserve Your <span className="text-brand-pink not-italic font-black">Indulgence.</span>
+          </h2>
+          <p className="text-slate-400 max-w-xl mx-auto text-lg leading-loose font-light">
+            Our schedule is curated to provide undivided attention. Secure your preferred slot today.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <Link to="/book" className="inline-block px-14 py-6 bg-stone-100 text-stone-900 font-bold uppercase tracking-[0.2em] text-xs hover:bg-white transition-all transform hover:-translate-y-1 shadow-2xl">
-              Book Appointment Now
+          <div className="pt-8 flex flex-col sm:flex-row justify-center space-y-6 sm:space-y-0 sm:space-x-8">
+            <Link to="/book" className="btn-brand !px-16">
+              Book Appointment
             </Link>
-            <a href="tel:+250788345678" className="inline-block px-14 py-6 border border-white/20 text-white font-bold uppercase tracking-[0.2em] text-xs hover:bg-white/10 transition-all">
-              Call The Hub
+            <a href="tel:+250788345678" className="px-16 py-5 border border-white/20 text-white font-bold uppercase tracking-widest text-[10px] hover:bg-white hover:text-brand-black transition-all">
+              The Concierge
             </a>
           </div>
         </div>

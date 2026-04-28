@@ -70,18 +70,20 @@ const Booking: React.FC<BookingProps> = ({ services, contact }) => {
 
   if (submitted) {
     return (
-      <div className="min-h-[80vh] flex flex-col items-center justify-center py-24 bg-[#FDFBF7] animate-in zoom-in duration-300">
-        <div className="bg-white p-12 shadow-2xl shadow-stone-200/50 text-center max-w-lg mx-auto">
-          <CheckCircle2 className="mx-auto mb-6 text-green-500" size={64} />
-          <h2 className="text-3xl font-serif text-stone-900 mb-4">Appointment Requested</h2>
-          <p className="text-stone-500 mb-8">
-            Thank you, {formData.name}. We have received your request for {services.find(s => s.id === formData.serviceId)?.name}. Our team will contact you shortly via {formData.phone} to confirm.
+      <div className="min-h-[80vh] flex flex-col items-center justify-center py-24 bg-brand-black animate-in zoom-in duration-500 px-6">
+        <div className="bg-white/[0.02] border border-white/5 p-16 text-center max-w-xl mx-auto backdrop-blur-xl">
+          <div className="w-20 h-20 bg-brand-pink/20 rounded-full flex items-center justify-center mx-auto mb-10">
+            <CheckCircle2 className="text-brand-pink" size={40} />
+          </div>
+          <h2 className="text-4xl font-serif text-white mb-6 italic">Request Received.</h2>
+          <p className="text-slate-400 mb-12 font-light leading-loose">
+            Thank you, {formData.name}. We have received your request for <span className="text-white font-medium">{services.find(s => s.id === formData.serviceId)?.name}</span>. Our concierge will contact you shortly via {formData.phone} to confirm your indulgence.
           </p>
           <button 
             onClick={() => setSubmitted(false)}
-            className="w-full py-4 bg-stone-900 text-white font-bold uppercase tracking-widest text-sm hover:bg-stone-800 transition-colors"
+            className="btn-brand w-full"
           >
-            New Booking
+            New Request
           </button>
         </div>
       </div>
@@ -89,105 +91,120 @@ const Booking: React.FC<BookingProps> = ({ services, contact }) => {
   }
 
   return (
-    <div className="bg-[#FDFBF7] min-h-screen py-24">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="text-center mb-16">
-          <span className="text-stone-500 uppercase tracking-[0.4em] text-xs mb-4 block">Reservation</span>
-          <h1 className="text-4xl md:text-6xl font-serif text-stone-900 mb-8">Book Appointment</h1>
-          <p className="text-stone-500 max-w-2xl mx-auto leading-relaxed">
-            Choose your preferred method of booking. We recommend booking at least 48 hours in advance for the best availability.
+    <div className="bg-brand-black min-h-screen py-32">
+      <div className="max-w-6xl mx-auto px-6 lg:px-12">
+        <header className="text-center mb-32 max-w-3xl mx-auto space-y-8">
+          <span className="text-brand-pink uppercase tracking-[0.4em] text-[10px] font-bold block">Reservation</span>
+          <h1 className="text-5xl md:text-7xl font-serif text-white font-light">Book <span className="italic">Artistry</span></h1>
+          <p className="text-slate-400 font-light italic leading-loose">
+            Secure your preferred moment. We recommend booking at least 48 hours in advance for the ultimate available experience.
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 items-start">
           {/* Option A: Form */}
-          <div className="bg-white p-8 md:p-12 shadow-sm border border-stone-100">
-            <h2 className="text-2xl font-serif mb-8 text-stone-900 flex items-center">
-              <Send className="mr-3" size={24} /> Online Request
+          <div className="lg:col-span-7 bg-white/[0.02] p-10 md:p-16 border border-white/5 backdrop-blur-xl group">
+            <h2 className="text-2xl font-serif mb-12 text-white flex items-center italic">
+              <Send className="mr-6 text-brand-pink" size={24} /> Online Request
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-xs uppercase tracking-widest font-bold text-stone-500 mb-2">Full Name</label>
-                <input 
-                  type="text" name="name" required value={formData.name} onChange={handleChange}
-                  className="w-full bg-stone-50 border-stone-200 border-b p-4 focus:outline-none focus:border-stone-900 transition-colors"
-                  placeholder="Your Name"
-                />
+            <form onSubmit={handleSubmit} className="space-y-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div>
+                  <label className="block text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 px-1">Full Name</label>
+                  <input 
+                    type="text" name="name" required value={formData.name} onChange={handleChange}
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/20 font-light"
+                    placeholder="E.g. Elena Wright"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 px-1">Phone Number</label>
+                  <input 
+                    type="tel" name="phone" required value={formData.phone} onChange={handleChange}
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/20 font-light"
+                    placeholder="+250..."
+                  />
+                </div>
               </div>
               <div>
-                <label className="block text-xs uppercase tracking-widest font-bold text-stone-500 mb-2">Phone Number</label>
-                <input 
-                  type="tel" name="phone" required value={formData.phone} onChange={handleChange}
-                  className="w-full bg-stone-50 border-stone-200 border-b p-4 focus:outline-none focus:border-stone-900 transition-colors"
-                  placeholder="+250..."
-                />
-              </div>
-              <div>
-                <label className="block text-xs uppercase tracking-widest font-bold text-stone-500 mb-2">Selected Service</label>
+                <label className="block text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 px-1">Selected Service</label>
                 <select 
                   name="serviceId" required value={formData.serviceId} onChange={handleChange}
-                  className="w-full bg-stone-50 border-stone-200 border-b p-4 focus:outline-none focus:border-stone-900 transition-colors appearance-none"
+                  className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white appearance-none font-light cursor-pointer"
                 >
-                  <option value="">Select a Service</option>
-                  {services.map(s => <option key={s.id} value={s.id}>{s.name} ({s.price})</option>)}
+                  <option value="" className="bg-brand-black">Select a Service</option>
+                  {services.map(s => <option key={s.id} value={s.id} className="bg-brand-black">{s.name} — {s.price}</option>)}
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-10">
                 <div>
-                  <label className="block text-xs uppercase tracking-widest font-bold text-stone-500 mb-2">Preferred Date</label>
+                  <label className="block text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 px-1">Preferred Date</label>
                   <input 
                     type="date" name="date" required value={formData.date} onChange={handleChange}
-                    className="w-full bg-stone-50 border-stone-200 border-b p-4 focus:outline-none focus:border-stone-900 transition-colors"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white font-light color-scheme-dark"
+                    style={{ colorScheme: 'dark' }}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest font-bold text-stone-500 mb-2">Preferred Time</label>
+                  <label className="block text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 px-1">Preferred Time</label>
                   <input 
                     type="time" name="time" required value={formData.time} onChange={handleChange}
-                    className="w-full bg-stone-50 border-stone-200 border-b p-4 focus:outline-none focus:border-stone-900 transition-colors"
+                    className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white font-light"
+                    style={{ colorScheme: 'dark' }}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs uppercase tracking-widest font-bold text-stone-500 mb-2">Notes (Optional)</label>
+                <label className="block text-[9px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-4 px-1">Notes (Optional)</label>
                 <textarea 
-                  name="notes" value={formData.notes} onChange={handleChange} rows={3}
-                  className="w-full bg-stone-50 border-stone-200 border-b p-4 focus:outline-none focus:border-stone-900 transition-colors"
-                  placeholder="Special requests or questions..."
+                  name="notes" value={formData.notes} onChange={handleChange} rows={2}
+                  className="w-full bg-transparent border-white/10 border-b pb-4 focus:outline-none focus:border-brand-pink transition-all text-white placeholder-white/20 font-light resize-none px-1"
+                  placeholder="Share any special requirements or questions..."
                 ></textarea>
               </div>
               <button 
                 type="submit"
-                className="w-full py-4 bg-stone-900 text-white font-bold uppercase tracking-widest text-sm hover:bg-stone-800 transition-colors shadow-lg shadow-stone-200"
+                className="btn-brand w-full !py-5 mt-4"
               >
-                Send Request
+                Send Online Request
               </button>
             </form>
           </div>
 
           {/* Option B: WhatsApp */}
-          <div className="space-y-8">
-            <div className="bg-stone-900 text-white p-8 md:p-12 shadow-xl">
-              <h2 className="text-2xl font-serif mb-6 flex items-center">
-                <MessageSquare className="mr-3" size={24} /> Instant Booking
-              </h2>
-              <p className="text-stone-400 mb-8 leading-relaxed">
-                Prefer a quicker response? Chat with us directly on WhatsApp to check availability and book instantly.
-              </p>
-              <button 
-                onClick={handleWhatsAppBooking}
-                className="w-full py-4 bg-[#25D366] text-white font-bold uppercase tracking-widest text-sm hover:bg-[#20bd5a] transition-all flex items-center justify-center"
-              >
-                <MessageSquare className="mr-2" size={20} /> Chat on WhatsApp
-              </button>
+          <div className="lg:col-span-5 space-y-12">
+            <div className="bg-white p-12 lg:p-16 text-brand-black shadow-2xl relative overflow-hidden group">
+              <div className="relative z-10">
+                <h2 className="text-3xl font-serif mb-8 flex items-center italic font-black">
+                  <MessageSquare className="mr-6 text-brand-pink" size={32} /> Instant Concierge
+                </h2>
+                <p className="text-brand-black/70 mb-12 leading-loose font-light italic">
+                  For immediate confirmation or same-day inquiries, connect directly with our concierge team on WhatsApp.
+                </p>
+                <button 
+                  onClick={handleWhatsAppBooking}
+                  className="w-full py-5 bg-[#25D366] text-white font-black uppercase tracking-[0.2em] text-[10px] hover:bg-brand-black transition-all flex items-center justify-center group-hover:scale-[1.02] shadow-xl"
+                >
+                  Connect on WhatsApp
+                </button>
+              </div>
             </div>
 
-            <div className="bg-white p-8 border border-stone-100 space-y-4">
-              <h3 className="text-lg font-serif text-stone-900">Salon Policy</h3>
-              <ul className="text-sm text-stone-500 space-y-2 list-disc pl-5">
-                <li>Please arrive 10 minutes prior to your appointment.</li>
-                <li>Cancellations require at least 24 hours notice.</li>
-                <li>Group bookings (3+ people) require a 30% deposit.</li>
+            <div className="border border-white/5 p-10 space-y-8 bg-white/[0.01]">
+              <h3 className="text-xs uppercase tracking-[0.3em] font-bold text-white border-b border-white/10 pb-4">Salon Etiquette</h3>
+              <ul className="text-sm text-slate-500 space-y-6 font-light">
+                <li className="flex items-start">
+                  <div className="w-1.5 h-1.5 bg-brand-pink rounded-full mt-1.5 mr-4 flex-shrink-0"></div>
+                  <span>Arrival: Please grace us with your presence 10 minutes prior to your session.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-1.5 h-1.5 bg-brand-pink rounded-full mt-1.5 mr-4 flex-shrink-0"></div>
+                  <span>Courtesy: We request a 24-hour notice for any schedule adjustments.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-1.5 h-1.5 bg-brand-pink rounded-full mt-1.5 mr-4 flex-shrink-0"></div>
+                  <span>Reservations: Group sessions of 3+ require a celebratory deposit.</span>
+                </li>
               </ul>
             </div>
           </div>

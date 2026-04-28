@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-pink: #FF2B85;
+  --color-brand-black: #0A0A0A;
+  
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+
+  @keyframes slow-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+  }
+  --animate-slow-zoom: slow-zoom 20s ease-in-out infinite alternate;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-black text-slate-50 font-sans antialiased;
+  }
+}
+
+.title-massive {
+  @apply font-serif text-[clamp(4rem,15vw,12rem)] leading-[0.85] tracking-[-0.03em] uppercase;
+}
+
+.btn-brand {
+  @apply px-8 py-4 bg-brand-pink text-white font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-all active:scale-95;
+}
+
+.nav-link {
+  @apply text-[10px] uppercase tracking-[0.25em] font-medium text-slate-400 hover:text-brand-pink transition-colors;
+}

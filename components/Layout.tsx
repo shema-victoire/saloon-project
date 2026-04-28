@@ -16,27 +16,39 @@ const Layout: React.FC<LayoutProps> = ({ children, contact }) => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navigation */}
-      <nav className="fixed w-full z-50 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center">
-            <Link to="/" className="flex flex-col">
-              <span className="text-2xl font-serif font-bold tracking-tight text-stone-900 leading-none">KEZA GLAM HUB</span>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-medium">Beauty Salon & Spa</span>
+      <nav className="fixed w-full z-50 bg-brand-black/80 backdrop-blur-xl border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="flex justify-between h-24 items-center">
+            {/* Logo */}
+            <Link to="/" className="flex flex-col group">
+              <span className="text-2xl font-serif font-black tracking-[0.1em] text-white leading-none group-hover:text-brand-pink transition-colors">
+                KEZA<span className="text-brand-pink">.</span>
+              </span>
+              <span className="text-[9px] uppercase tracking-[0.4em] text-brand-pink/60 font-bold mt-1">GLAM HUB</span>
             </Link>
 
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-10">
-              <Link to="/" className="text-sm uppercase tracking-widest hover:text-stone-500 transition-colors">Home</Link>
-              <Link to="/services" className="text-sm uppercase tracking-widest hover:text-stone-500 transition-colors">Services</Link>
-              <Link to="/gallery" className="text-sm uppercase tracking-widest hover:text-stone-500 transition-colors">Gallery</Link>
-              <Link to="/contact" className="text-sm uppercase tracking-widest hover:text-stone-500 transition-colors">Contact</Link>
-              <Link to="/book" className="px-6 py-2.5 bg-stone-900 text-white text-sm uppercase tracking-widest hover:bg-stone-800 transition-colors">Book Now</Link>
+            {/* Center Desktop Menu */}
+            <div className="hidden md:flex flex-1 justify-center items-center space-x-12">
+              <Link to="/" className="nav-link">Home</Link>
+              <Link to="/services" className="nav-link">Services</Link>
+              <Link to="/gallery" className="nav-link">Gallery</Link>
+              <Link to="/contact" className="nav-link">Contact</Link>
+            </div>
+
+            {/* Right Action */}
+            <div className="hidden md:block">
+              <Link to="/book" className="btn-brand !py-2.5 !px-6 text-[10px]">
+                Book
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center">
-              <button onClick={() => setIsOpen(!isOpen)} className="text-stone-900 focus:outline-none">
-                {isOpen ? <X size={28} /> : <Menu size={28} />}
+              <button 
+                onClick={() => setIsOpen(!isOpen)} 
+                className="text-white hover:text-brand-pink transition-colors focus:outline-none"
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
@@ -44,36 +56,36 @@ const Layout: React.FC<LayoutProps> = ({ children, contact }) => {
 
         {/* Mobile Menu Panel */}
         {isOpen && (
-          <div className="md:hidden bg-[#FDFBF7] border-b border-stone-200 animate-in fade-in slide-in-from-top-4 duration-300">
-            <div className="px-4 pt-2 pb-6 space-y-4">
-              <Link to="/" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-lg font-serif">Home</Link>
-              <Link to="/services" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-lg font-serif">Services</Link>
-              <Link to="/gallery" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-lg font-serif">Gallery</Link>
-              <Link to="/contact" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-lg font-serif">Contact</Link>
-              <Link to="/book" onClick={() => setIsOpen(false)} className="block w-full py-3 bg-stone-900 text-white text-center uppercase tracking-widest">Book Now</Link>
+          <div className="md:hidden bg-brand-black border-b border-white/10 animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="px-6 pt-4 pb-12 space-y-6 text-center">
+              <Link to="/" onClick={() => setIsOpen(false)} className="block text-2xl font-serif uppercase tracking-tight">Home</Link>
+              <Link to="/services" onClick={() => setIsOpen(false)} className="block text-2xl font-serif uppercase tracking-tight">Services</Link>
+              <Link to="/gallery" onClick={() => setIsOpen(false)} className="block text-2xl font-serif uppercase tracking-tight">Gallery</Link>
+              <Link to="/contact" onClick={() => setIsOpen(false)} className="block text-2xl font-serif uppercase tracking-tight">Contact</Link>
+              <Link to="/book" onClick={() => setIsOpen(false)} className="btn-brand block w-full mt-4">Book Appointment</Link>
             </div>
           </div>
         )}
       </nav>
 
       {/* Main Content */}
-      <main className="flex-grow pt-20">
+      <main className="flex-grow pt-24 bg-brand-black text-white">
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="bg-stone-900 text-stone-300 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+      <footer className="bg-black border-t border-white/5 text-slate-400 py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-16">
             {/* Brand */}
-            <div className="space-y-4">
-              <h3 className="text-white text-2xl font-serif">KEZA GLAM HUB</h3>
-              <p className="text-stone-400 text-sm leading-relaxed max-w-xs">
-                Excellence in hair, nails, and skin care. We are committed to providing a luxury experience for the modern professional.
+            <div className="space-y-6">
+              <h3 className="text-white text-3xl font-serif font-black tracking-widest">KEZA<span className="text-brand-pink">.</span></h3>
+              <p className="text-sm leading-relaxed font-light">
+                Rwanda's premier luxury beauty destination. Excellence in aesthetics, uncompromising quality, and an atmosphere of pure indulgence.
               </p>
-              <div className="flex space-x-4 pt-4">
-                <a href="#" className="hover:text-white transition-colors"><Instagram size={20} /></a>
-                <a href="#" className="hover:text-white transition-colors"><Facebook size={20} /></a>
+              <div className="flex space-x-6">
+                <a href="#" className="text-white/60 hover:text-brand-pink transition-colors"><Instagram size={18} /></a>
+                <a href="#" className="text-white/60 hover:text-brand-pink transition-colors"><Facebook size={18} /></a>
               </div>
             </div>
 
