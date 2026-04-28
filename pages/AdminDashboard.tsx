@@ -12,7 +12,7 @@ interface AdminDashboardProps {
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogout }) => {
-  const [activeTab, setActiveTab] = useState<'services' | 'gallery' | 'contact'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'gallery' | 'contact' | 'bookings'>('bookings');
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<any>({});
@@ -30,7 +30,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
   };
 
   // SERVICES CRUD
-  const handleServiceAdd = () => {
+  const handleServiceAdd = async () => {
     const newService: Service = {
       id: Date.now().toString(),
       name: formData.name || 'New Service',
@@ -39,62 +39,67 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
       category: formData.category || 'General',
       imageUrl: formData.imageUrl || 'https://picsum.photos/800/600'
     };
-    const updated = [...state.services, newService];
-    cmsService.updateServices(updated);
-    onUpdate();
+    await cmsService.updateService(newService);
     setIsAdding(false);
     setFormData({});
     showSaveSuccess();
   };
 
-  const handleServiceDelete = (id: string) => {
+  const handleServiceDelete = async (id: string) => {
     if (window.confirm("Delete this service?")) {
-      const updated = state.services.filter(s => s.id !== id);
-      cmsService.updateServices(updated);
-      onUpdate();
+      await cmsService.deleteService(id);
       showSaveSuccess();
     }
   };
 
-  const handleServiceUpdate = (id: string) => {
-    const updated = state.services.map(s => s.id === id ? { ...s, ...formData } : s);
-    cmsService.updateServices(updated);
-    onUpdate();
-    setEditingId(null);
-    setFormData({});
-    showSaveSuccess();
+  const handleServiceUpdate = async (id: string) => {
+    const existing = state.services.find(s => s.id === id);
+    if (existing) {
+      await cmsService.updateService({ ...existing, ...formData });
+      setEditingId(null);
+      setFormData({});
+      showSaveSuccess();
+    }
   };
 
   // GALLERY CRUD
-  const handleGalleryAdd = () => {
+  const handleGalleryAdd = async () => {
     const newItem: GalleryImage = {
       id: Date.now().toString(),
       url: formData.url || 'https://picsum.photos/800/800',
       title: formData.title || 'Gallery Image',
       category: formData.category || 'General'
     };
-    const updated = [...state.gallery, newItem];
-    cmsService.updateGallery(updated);
-    onUpdate();
+    await cmsService.updateGalleryImage(newItem);
     setIsAdding(false);
     setFormData({});
     showSaveSuccess();
   };
 
-  const handleGalleryDelete = (id: string) => {
+  const handleGalleryDelete = async (id: string) => {
     if (window.confirm("Delete this gallery image?")) {
-      const updated = state.gallery.filter(g => g.id !== id);
-      cmsService.updateGallery(updated);
-      onUpdate();
+      await cmsService.deleteGalleryImage(id);
       showSaveSuccess();
     }
   };
 
   // CONTACT UPDATE
-  const handleContactUpdate = () => {
-    cmsService.updateContact({ ...state.contact, ...formData });
-    onUpdate();
+  const handleContactUpdate = async () => {
+    await cmsService.updateContact({ ...state.contact, ...formData });
     setFormData({});
+    showSaveSuccess();
+  };
+
+  // BOOKINGS CRUD
+  const handleBookingDelete = async (id: string) => {
+    if (window.confirm("Delete this booking record?")) {
+      await cmsService.deleteBooking(id);
+      showSaveSuccess();
+    }
+  };
+
+  const handleBookingStatusUpdate = async (id: string, status: 'confirmed' | 'cancelled' | 'pending') => {
+    await cmsService.updateBookingStatus(id, status);
     showSaveSuccess();
   };
 
@@ -107,6 +112,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
         </div>
         <nav className="p-4 space-y-2">
           {[
+            { id: 'bookings', label: 'Bookings', icon: LayoutIcon },
             { id: 'services', label: 'Services', icon: Briefcase },
             { id: 'gallery', label: 'Gallery', icon: ImageIcon },
             { id: 'contact', label: 'Contact & Info', icon: Phone },
@@ -141,7 +147,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
               <Check size={18} className="mr-1" /> Changes Saved
             </div>
           )}
-          {activeTab !== 'contact' && !isAdding && !editingId && (
+          {activeTab !== 'contact' && activeTab !== 'bookings' && !isAdding && !editingId && (
             <button 
               onClick={() => setIsAdding(true)}
               className="px-6 py-2.5 bg-stone-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-stone-800 transition-colors flex items-center"
@@ -154,6 +160,74 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ state, onUpdate, onLogo
         {/* Dynamic Forms / Lists */}
         <div className="animate-in fade-in duration-300">
           
+          {/* Bookings Tab */}
+          {activeTab === 'bookings' && (
+            <div className="space-y-6">
+              {state.bookings.length === 0 ? (
+                <div className="bg-white p-12 text-center border border-stone-100 italic text-stone-400">
+                  No bookings matching your criteria.
+                </div>
+              ) : (
+                <div className="bg-white shadow-sm border border-stone-200 overflow-hidden">
+                  <table className="w-full text-left border-collapse">
+                    <thead className="bg-stone-50 border-b border-stone-200">
+                      <tr>
+                        <th className="p-4 text-[10px] uppercase tracking-widest font-bold text-stone-400">Client</th>
+                        <th className="p-4 text-[10px] uppercase tracking-widest font-bold text-stone-400">Service</th>
+                        <th className="p-4 text-[10px] uppercase tracking-widest font-bold text-stone-400">Date/Time</th>
+                        <th className="p-4 text-[10px] uppercase tracking-widest font-bold text-stone-400">Status</th>
+                        <th className="p-4 text-[10px] uppercase tracking-widest font-bold text-stone-400 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100">
+                      {state.bookings.map((booking) => (
+                        <tr key={booking.id} className="hover:bg-stone-50/50 transition-colors">
+                          <td className="p-4">
+                            <div className="font-serif text-stone-900">{booking.name}</div>
+                            <div className="text-xs text-stone-500">{booking.phone}</div>
+                          </td>
+                          <td className="p-4">
+                            <div className="text-sm text-stone-700">{booking.serviceName}</div>
+                          </td>
+                          <td className="p-4">
+                            <div className="text-sm text-stone-700">{booking.date}</div>
+                            <div className="text-xs text-stone-500">{booking.time}</div>
+                          </td>
+                          <td className="p-4">
+                            <select 
+                              value={booking.status}
+                              onChange={(e) => handleBookingStatusUpdate(booking.id, e.target.value as any)}
+                              className={`text-[10px] uppercase tracking-tighter font-bold px-2 py-1 border rounded focus:outline-none ${
+                                booking.status === 'confirmed' ? 'bg-green-50 text-green-700 border-green-200' : 
+                                booking.status === 'cancelled' ? 'bg-red-50 text-red-700 border-red-200' : 
+                                'bg-yellow-50 text-yellow-700 border-yellow-200'
+                              }`}
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="confirmed">Confirmed</option>
+                              <option value="cancelled">Cancelled</option>
+                            </select>
+                          </td>
+                          <td className="p-4 text-right">
+                            <div className="flex justify-end space-x-2">
+                              <button 
+                                onClick={() => handleBookingDelete(booking.id)}
+                                className="p-2 text-stone-400 hover:text-red-600 transition-colors"
+                                title="Delete Record"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Add/Edit Service Form */}
           {(isAdding || editingId) && activeTab === 'services' && (
             <div className="bg-white p-8 shadow-sm border border-stone-200 mb-10 max-w-2xl">

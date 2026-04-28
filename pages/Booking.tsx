@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Service, ContactInfo } from '../types';
+import { Service, ContactInfo, Booking as BookingType } from '../types';
 import { CheckCircle2, MessageSquare, Send } from 'lucide-react';
+import { cmsService } from '../services/cmsService';
 
 interface BookingProps {
   services: Service[];
@@ -33,12 +34,31 @@ const Booking: React.FC<BookingProps> = ({ services, contact }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate API call to send email
-    console.log("Booking data sent to Gmail:", formData);
-    setSubmitted(true);
-    // In a real production app, you would use EmailJS or a backend API here.
+    
+    // Create booking object
+    const selectedService = services.find(s => s.id === formData.serviceId);
+    
+    const newBooking: Omit<BookingType, 'createdAt'> = {
+      id: Date.now().toString(),
+      name: formData.name,
+      phone: formData.phone,
+      serviceId: formData.serviceId,
+      serviceName: selectedService?.name || 'Unknown Service',
+      date: formData.date,
+      time: formData.time,
+      notes: formData.notes,
+      status: 'pending'
+    };
+
+    try {
+      // Save to CMS (Firestore)
+      await cmsService.addBooking(newBooking as any);
+      setSubmitted(true);
+    } catch (error) {
+      alert("Failed to submit booking. Please try again or contact us via WhatsApp.");
+    }
   };
 
   const handleWhatsAppBooking = () => {

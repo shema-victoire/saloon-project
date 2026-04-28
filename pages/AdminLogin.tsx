@@ -1,26 +1,28 @@
-
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { ADMIN_CREDENTIALS } from '../constants';
-import { Lock, Mail, ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LogIn } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 interface AdminLoginProps {
   onLogin: () => void;
 }
 
-const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const AdminLogin: React.FC<AdminLoginProps> = () => {
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-      onLogin();
-      navigate('/admin/dashboard');
-    } else {
-      setError('Invalid email or password. Please try again.');
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError('');
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      // App.tsx handles state change and redirection
+    } catch (err: any) {
+      console.error(err);
+      setError('Failed to sign in. Please use the registered admin email.');
+      setLoading(false);
     }
   };
 
@@ -33,63 +35,44 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
         </div>
         
         <div className="p-10 space-y-8">
-          <form onSubmit={handleLogin} className="space-y-8">
+          <div className="text-center space-y-4">
+            <p className="text-sm text-stone-600 leading-relaxed font-light">
+              This area is restricted to salon administrators. Please authenticate with your registered Google account.
+            </p>
+          </div>
+
+          <div className="space-y-6">
             {error && (
               <div className="bg-red-50 text-red-600 text-xs p-4 border border-red-100 flex items-center animate-in fade-in slide-in-from-top-2">
-                <span className="font-bold">Error:</span> {error}
+                <span className="font-bold mr-2">Access Denied:</span> {error}
               </div>
             )}
             
-            <div className="space-y-6">
-              <div className="relative">
-                <label className="block text-[10px] uppercase tracking-widest font-bold text-stone-500 mb-2">Email Address</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300">
-                    <Mail size={18} />
-                  </span>
-                  <input 
-                    type="email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-stone-50 border border-stone-100 focus:bg-white focus:border-stone-900 focus:outline-none transition-all text-sm"
-                    placeholder="admin@kezaglamhub.com"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="relative">
-                <label className="block text-[10px] uppercase tracking-widest font-bold text-stone-500 mb-2">Password</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300">
-                    <Lock size={18} />
-                  </span>
-                  <input 
-                    type="password" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-stone-50 border border-stone-100 focus:bg-white focus:border-stone-900 focus:outline-none transition-all text-sm"
-                    placeholder="••••••••"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
             <button 
-              type="submit"
-              className="w-full py-4 bg-stone-900 text-white font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-all flex items-center justify-center group"
+              onClick={handleGoogleLogin}
+              disabled={loading}
+              className="w-full py-4 bg-white border-2 border-stone-900 text-stone-900 font-bold uppercase tracking-widest text-xs hover:bg-stone-900 hover:text-white transition-all flex items-center justify-center group disabled:opacity-50 disabled:cursor-wait"
             >
-              Authenticate <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+              {loading ? (
+                <span className="flex items-center">
+                  <div className="w-4 h-4 border-2 border-stone-900 border-t-transparent rounded-full animate-spin mr-2 group-hover:border-white group-hover:border-t-transparent"></div>
+                  Verifying...
+                </span>
+              ) : (
+                <>
+                  <LogIn size={16} className="mr-2" /> 
+                  Sign in with Google
+                </>
+              )}
             </button>
-          </form>
+          </div>
 
           <div className="flex flex-col items-center space-y-4 pt-4 border-t border-stone-50">
             <Link to="/" className="text-stone-400 hover:text-stone-900 transition-colors flex items-center text-[10px] uppercase tracking-[0.2em] font-bold">
               <ArrowLeft size={14} className="mr-2" /> Back to Website
             </Link>
             <p className="text-center text-[10px] text-stone-300 uppercase tracking-widest">
-              Protected area for salon administrators only
+              Secured with Firebase Authentication
             </p>
           </div>
         </div>

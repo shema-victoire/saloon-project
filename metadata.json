@@ -1,5 +1,6 @@
 {
   "name": "Keza Glam Hub",
   "description": "A luxury beauty salon website for Keza Glam Hub in Kigali, Rwanda, featuring a custom CMS for services and gallery, online booking, and WhatsApp integration.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": []
 }

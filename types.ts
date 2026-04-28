@@ -24,8 +24,22 @@ export interface ContactInfo {
   aboutText: string;
 }
 
+export interface Booking {
+  id: string;
+  name: string;
+  phone: string;
+  serviceId: string;
+  serviceName: string;
+  date: string;
+  time: string;
+  notes?: string;
+  createdAt: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+}
+
 export type AppState = {
   services: Service[];
   gallery: GalleryImage[];
   contact: ContactInfo;
+  bookings: Booking[];
 };

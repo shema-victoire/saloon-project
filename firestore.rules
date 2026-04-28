@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    
+    // Admin check based on user email from environment/metadata
+    function isAdmin() { 
+      return isVerified() && request.auth.token.email == 'shemavictoirebigshark@gmail.com';
+    }
+    
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // 2. Service Validation
+    function isValidService(data) {
+      return data.keys().hasAll(['id', 'name', 'description', 'category']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 200 &&
+             data.description is string && data.description.size() <= 2000 &&
+             data.category is string && data.category.size() <= 100 &&
+             (!('price' in data) || (data.price is string && data.price.size() <= 100)) &&
+             (!('imageUrl' in data) || (data.imageUrl is string && data.imageUrl.size() <= 1000));
+    }
+
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidService(incoming());
+    }
+
+    // 3. Gallery Validation
+    function isValidGallery(data) {
+      return data.keys().hasAll(['id', 'url', 'title', 'category']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.url is string && data.url.size() <= 1000 &&
+             data.title is string && data.title.size() <= 200 &&
+             data.category is string && data.category.size() <= 100;
+    }
+
+    match /gallery/{imageId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidGallery(incoming());
+    }
+
+    // 4. Contact Validation
+    function isValidContact(data) {
+      return data.keys().hasAll(['phone', 'email', 'whatsapp', 'address', 'aboutText']) &&
+             data.phone is string && data.phone.size() <= 50 &&
+             data.email is string && data.email.size() <= 200 &&
+             data.whatsapp is string && data.whatsapp.size() <= 50 &&
+             data.address is string && data.address.size() <= 500 &&
+             data.aboutText is string && data.aboutText.size() <= 5000 &&
+             (!('mapsEmbed' in data) || (data.mapsEmbed is string && data.mapsEmbed.size() <= 2000));
+    }
+
+    match /contact/info {
+      allow read: if true;
+      allow write: if isAdmin() && isValidContact(incoming());
+    }
+
+    // 5. Booking Validation
+    function isValidBooking(data) {
+      return data.keys().hasAll(['id', 'name', 'phone', 'serviceId', 'serviceName', 'date', 'time', 'createdAt', 'status']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 200 &&
+             data.phone is string && data.phone.size() <= 50 &&
+             data.serviceId is string && data.serviceId.size() <= 128 &&
+             data.serviceName is string && data.serviceName.size() <= 200 &&
+             data.date is string && data.date.size() <= 50 &&
+             data.time is string && data.time.size() <= 50 &&
+             data.createdAt == request.time &&
+             data.status == 'pending' &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 2000));
+    }
+
+    match /bookings/{bookingId} {
+      allow create: if isValidBooking(incoming());
+      allow list, get, delete: if isAdmin();
+      allow update: if isAdmin() && 
+                    // Action: Update Status
+                    incoming().diff(existing()).affectedKeys().hasOnly(['status']) &&
+                    incoming().status in ['pending', 'confirmed', 'cancelled'];
+    }
+  }
+}

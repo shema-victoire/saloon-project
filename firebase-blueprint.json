@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "Service": {
+      "title": "Service",
+      "description": "Beauty service offered by the salon",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "string" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["id", "name", "description", "category"]
+    },
+    "GalleryImage": {
+      "title": "Gallery Image",
+      "description": "Image in the salon gallery",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "url": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" }
+      },
+      "required": ["id", "url", "title", "category"]
+    },
+    "ContactInfo": {
+      "title": "Contact Info",
+      "description": "Salon contact and location information",
+      "type": "object",
+      "properties": {
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "address": { "type": "string" },
+        "mapsEmbed": { "type": "string" },
+        "aboutText": { "type": "string" }
+      },
+      "required": ["phone", "email", "whatsapp", "address", "aboutText"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "Client service booking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "serviceId": { "type": "string" },
+        "serviceName": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"] }
+      },
+      "required": ["id", "name", "phone", "serviceId", "serviceName", "date", "time", "createdAt", "status"]
+    }
+  },
+  "firestore": {
+    "services": {
+      "schema": "Service",
+      "description": "Collection of available salon services"
+    },
+    "gallery": {
+      "schema": "GalleryImage",
+      "description": "Collection of gallery images"
+    },
+    "contact": {
+      "schema": "ContactInfo",
+      "description": "Singleton collection for salon contact info (document id: info)"
+    },
+    "bookings": {
+      "schema": "Booking",
+      "description": "Collection of client bookings"
+    }
+  }
+}
